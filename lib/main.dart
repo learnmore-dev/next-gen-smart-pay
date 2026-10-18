@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'shop_page.dart';
+import 'features/profile/profile_page.dart';
 
 void main() {
   runApp(const SmartPayApp());
@@ -26,6 +28,10 @@ class SmartPayApp extends StatelessWidget {
     );
   }
 }
+
+// --------------------------------------------------
+// MAIN BOTTOM NAVIGATION
+// --------------------------------------------------
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -62,9 +68,8 @@ class _MainNavigationState extends State<MainNavigation> {
         title: const Text('Add Money'),
         content: TextField(
           controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(
-            decimal: true,
-          ),
+          keyboardType:
+              const TextInputType.numberWithOptions(decimal: true),
           decoration: const InputDecoration(
             labelText: 'Amount in ₹',
             prefixText: '₹ ',
@@ -78,7 +83,8 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
           FilledButton(
             onPressed: () {
-              final amount = double.tryParse(controller.text.trim());
+              final amount =
+                  double.tryParse(controller.text.trim());
 
               if (amount == null ||
                   !amount.isFinite ||
@@ -118,6 +124,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    // Updated: ProfilePage comes from profile_page.dart.
     final pages = [
       HomeScreen(
         balance: balance,
@@ -129,18 +136,14 @@ class _MainNavigationState extends State<MainNavigation> {
         onAddMoney: showMoneyDialog,
         onOpen: openPage,
       ),
-      FeaturePage(
-        title: 'Shop',
-        icon: Icons.shopping_bag_outlined,
-        color: purple,
-      ),
-      FeaturePage(
+      const ShopPage(),
+      const FeaturePage(
         title: 'Scan & Pay',
         icon: Icons.qr_code_scanner,
         color: purple,
       ),
       HistoryScreen(transactions: transactions),
-      const ProfileScreen(),
+      const ProfilePage(),
     ];
 
     return Scaffold(
@@ -182,6 +185,10 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 }
+
+// --------------------------------------------------
+// HOME SCREEN
+// --------------------------------------------------
 
 class HomeScreen extends StatelessWidget {
   final double balance;
@@ -226,6 +233,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
+
+            // Wallet card
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
@@ -261,7 +270,10 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   const Text(
                     'Guest',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
                   ),
                   const SizedBox(height: 15),
                   const Text(
@@ -284,26 +296,28 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 7),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        onOpen('Login', Icons.lock_outline, purple);
-                      },
-                      icon: const Icon(Icons.lock_outline, size: 13),
-                      label: const Text('Login to see'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor:
-                            Colors.white.withValues(alpha: 0.20),
-                      ),
+                  TextButton.icon(
+                    onPressed: () => onOpen(
+                      'Login',
+                      Icons.lock_outline,
+                      purple,
+                    ),
+                    icon: const Icon(
+                      Icons.lock_outline,
+                      size: 13,
+                    ),
+                    label: const Text('Login to see'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor:
+                          Colors.white.withValues(alpha: 0.20),
                     ),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
-                        child: _walletInfo(
+                        child: walletInfo(
                           'CASHBACK',
                           '₹0',
                           'Pending 30 days',
@@ -312,7 +326,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: _walletInfo(
+                        child: walletInfo(
                           'PENDING',
                           '₹0',
                           'Awaiting admin',
@@ -325,7 +339,7 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: _walletButton(
+                        child: walletButton(
                           '+ Add Money',
                           Icons.add,
                           onAddMoney,
@@ -333,7 +347,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: _walletButton(
+                        child: walletButton(
                           hideBalance ? 'Show' : 'Hide',
                           hideBalance
                               ? Icons.visibility
@@ -346,39 +360,42 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+
             const SizedBox(height: 24),
+
+            // Main actions
             Row(
               children: [
-                _action(
+                actionItem(
                   'Send',
                   Icons.send_rounded,
-                  const Color(0xFF7653F5),
+                  purple,
                   () => onOpen('Send Money', Icons.send, purple),
                 ),
-                _action(
+                actionItem(
                   'Scan & Pay',
                   Icons.qr_code,
-                  const Color(0xFF159DE5),
+                  Colors.blue,
                   () => onOpen(
                     'Scan & Pay',
                     Icons.qr_code_scanner,
                     Colors.blue,
                   ),
                 ),
-                _action(
+                actionItem(
                   'Receive',
                   Icons.south_west,
-                  const Color(0xFF10B981),
+                  Colors.green,
                   () => onOpen(
                     'Receive Money',
                     Icons.south_west,
                     Colors.green,
                   ),
                 ),
-                _action(
+                actionItem(
                   'Withdraw',
                   Icons.north_east,
-                  const Color(0xFFFF9100),
+                  Colors.orange,
                   () => onOpen(
                     'Withdraw',
                     Icons.north_east,
@@ -387,7 +404,9 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 23),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -399,17 +418,16 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {
-                    onOpen('All Services', Icons.apps, purple);
-                  },
+                  onPressed: () =>
+                      onOpen('All Services', Icons.apps, purple),
                   child: const Text('View All >'),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+
             Row(
               children: [
-                _action(
+                actionItem(
                   'Bill Pay',
                   Icons.receipt_long,
                   Colors.orange,
@@ -419,7 +437,7 @@ class HomeScreen extends StatelessWidget {
                     Colors.orange,
                   ),
                 ),
-                _action(
+                actionItem(
                   'Recharge',
                   Icons.phone_android,
                   Colors.green,
@@ -429,7 +447,7 @@ class HomeScreen extends StatelessWidget {
                     Colors.green,
                   ),
                 ),
-                _action(
+                actionItem(
                   'Gas',
                   Icons.local_fire_department,
                   Colors.deepOrange,
@@ -439,20 +457,26 @@ class HomeScreen extends StatelessWidget {
                     Colors.deepOrange,
                   ),
                 ),
-                _action(
+                actionItem(
                   'DTH',
                   Icons.tv,
                   Colors.purple,
-                  () => onOpen('DTH Recharge', Icons.tv, purple),
+                  () => onOpen(
+                    'DTH Recharge',
+                    Icons.tv,
+                    purple,
+                  ),
                 ),
               ],
             ),
+
             const SizedBox(height: 22),
-            _banner(
+
+            banner(
               'Bill Payments',
               'Electricity • Water • Gas • Mobile & more',
-              const Color(0xFFFF9800),
-              const Color(0xFFFF4848),
+              Colors.orange,
+              Colors.redAccent,
               Icons.receipt_long,
               () => onOpen(
                 'Bill Payments',
@@ -460,41 +484,60 @@ class HomeScreen extends StatelessWidget {
                 Colors.orange,
               ),
             ),
-            _banner(
+            banner(
               'Shopping Center',
               'Electronics • Fashion • Grocery & more',
-              const Color(0xFFEC3FA5),
-              const Color(0xFF9655F5),
+              Colors.pink,
+              purple,
               Icons.shopping_bag,
-              () => onOpen('Shopping Center', Icons.shopping_bag, purple),
+              () => onOpen(
+                'Shopping Center',
+                Icons.shopping_bag,
+                purple,
+              ),
             ),
-            _banner(
+            banner(
               'Offline Store Center',
               'Find nearby shops • Address, photo, timings & contact',
-              const Color(0xFF08ADEE),
-              const Color(0xFF6359F4),
+              Colors.lightBlue,
+              purple,
               Icons.store,
-              () => onOpen('Offline Store Center', Icons.store, Colors.blue),
+              () => onOpen(
+                'Offline Store Center',
+                Icons.store,
+                Colors.blue,
+              ),
             ),
-            _banner(
+            banner(
               'Become a Vendor',
               'Sell your products on SmartPay247',
-              const Color(0xFF0BBD8B),
-              const Color(0xFF05B7C8),
+              Colors.green,
+              Colors.teal,
               Icons.storefront,
-              () => onOpen('Become a Vendor', Icons.storefront, Colors.green),
+              () => onOpen(
+                'Become a Vendor',
+                Icons.storefront,
+                Colors.green,
+              ),
             ),
+
             const SizedBox(height: 12),
             const Text(
               'Recent Transactions',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
+
             if (transactions.isEmpty)
               const Card(
                 child: Padding(
                   padding: EdgeInsets.all(22),
-                  child: Center(child: Text('No transactions yet')),
+                  child: Center(
+                    child: Text('No transactions yet'),
+                  ),
                 ),
               )
             else
@@ -516,7 +559,11 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-Widget _walletInfo(
+// --------------------------------------------------
+// REUSABLE HOME WIDGETS
+// --------------------------------------------------
+
+Widget walletInfo(
   String title,
   String amount,
   String subtitle,
@@ -562,14 +609,17 @@ Widget _walletInfo(
         const SizedBox(height: 3),
         Text(
           subtitle,
-          style: const TextStyle(color: Colors.white, fontSize: 9),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 9,
+          ),
         ),
       ],
     ),
   );
 }
 
-Widget _walletButton(
+Widget walletButton(
   String text,
   IconData icon,
   VoidCallback onTap,
@@ -596,7 +646,7 @@ Widget _walletButton(
   );
 }
 
-Widget _action(
+Widget actionItem(
   String title,
   IconData icon,
   Color color,
@@ -606,8 +656,8 @@ Widget _action(
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 3),
       child: InkWell(
-        borderRadius: BorderRadius.circular(15),
         onTap: onTap,
+        borderRadius: BorderRadius.circular(15),
         child: Container(
           constraints: const BoxConstraints(minHeight: 82),
           padding: const EdgeInsets.symmetric(
@@ -649,7 +699,7 @@ Widget _action(
   );
 }
 
-Widget _banner(
+Widget banner(
   String title,
   String subtitle,
   Color start,
@@ -720,6 +770,10 @@ Widget _banner(
     ),
   );
 }
+
+// --------------------------------------------------
+// GENERIC FEATURE PAGE
+// --------------------------------------------------
 
 class FeaturePage extends StatefulWidget {
   final String title;
@@ -825,6 +879,7 @@ class _FeaturePageState extends State<FeaturePage> {
             style: const TextStyle(color: Colors.blueGrey),
           ),
           const SizedBox(height: 30),
+
           if (isFormFeature)
             Form(
               key: formKey,
@@ -838,7 +893,8 @@ class _FeaturePageState extends State<FeaturePage> {
                     decoration: InputDecoration(
                       labelText: firstLabel,
                       border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.person_outline),
+                      prefixIcon:
+                          const Icon(Icons.person_outline),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -869,7 +925,9 @@ class _FeaturePageState extends State<FeaturePage> {
 
                       if (widget.title != 'Login' &&
                           widget.title != 'Become a Vendor') {
-                        final amount = double.tryParse(value.trim());
+                        final amount =
+                            double.tryParse(value.trim());
+
                         if (amount == null ||
                             !amount.isFinite ||
                             amount <= 0) {
@@ -904,14 +962,18 @@ class _FeaturePageState extends State<FeaturePage> {
             Column(
               children: [
                 if (widget.title == 'Scan & Pay') ...[
-                  const Icon(Icons.qr_code_2, size: 100, color: purple),
+                  const Icon(
+                    Icons.qr_code_2,
+                    size: 100,
+                    color: purple,
+                  ),
                   const SizedBox(height: 12),
                   const Text(
                     'QR scanning is not connected yet. A QR scanner and camera permission are needed.',
                     textAlign: TextAlign.center,
                   ),
-                ] else if (widget.title == 'Shop' ||
-                    widget.title == 'Shopping Center') ...[
+                ] else if (widget.title == 'Shopping Center' ||
+                    widget.title == 'Shop') ...[
                   const Icon(
                     Icons.shopping_bag_outlined,
                     size: 75,
@@ -990,7 +1052,8 @@ class _FeaturePageState extends State<FeaturePage> {
             'Details validated. Firebase Authentication is not connected yet.';
         break;
       case 'Send Money':
-        message = 'Transfer details validated. No money has been sent.';
+        message =
+            'Transfer details validated. No money has been sent.';
         break;
       case 'Receive Money':
         message =
@@ -1065,6 +1128,10 @@ class _FeaturePageState extends State<FeaturePage> {
   }
 }
 
+// --------------------------------------------------
+// TRANSACTION HISTORY
+// --------------------------------------------------
+
 class HistoryScreen extends StatelessWidget {
   final List<String> transactions;
 
@@ -1076,7 +1143,9 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Transaction History')),
+      appBar: AppBar(
+        title: const Text('Transaction History'),
+      ),
       body: transactions.isEmpty
           ? const Center(
               child: Column(
@@ -1106,475 +1175,6 @@ class HistoryScreen extends StatelessWidget {
                 subtitle: const Text('Demo activity only'),
               ),
             ),
-    );
-  }
-}
-
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('My Profile')),
-      body: ListView(
-        padding: const EdgeInsets.all(18),
-        children: [
-          const SizedBox(height: 20),
-          const CircleAvatar(
-            radius: 42,
-            backgroundColor: Color(0xFFECE7FF),
-            child: Icon(Icons.person, color: purple, size: 45),
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            'Guest User',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 21,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'Login to manage your account',
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 25),
-          _profileItem(context, Icons.person_outline, 'Personal Information'),
-          _profileItem(context, Icons.account_balance, 'Bank Accounts'),
-          _profileItem(context, Icons.security, 'Security & PIN'),
-          _profileItem(context, Icons.notifications_outlined, 'Notifications'),
-          _profileItem(context, Icons.help_outline, 'Help & Support'),
-          _profileItem(context, Icons.info_outline, 'About SmartPay247'),
-        ],
-      ),
-    );
-  }
-
-  Widget _profileItem(
-    BuildContext context,
-    IconData icon,
-    String title,
-  ) {
-    return Card(
-      color: Colors.white,
-      child: ListTile(
-        leading: Icon(icon, color: purple),
-        title: Text(title),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => Scaffold(
-                appBar: AppBar(title: Text(title)),
-                body: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      '$title will be available after the feature is implemented.',
-                      textAlign: TextAlign.center,
-                    ),
-                  ), 
-                ),  
-              ),   
-            ),    
-          );
-        },
-      ),
-    );
-  }
-}
-/////////////////////////////////////////////
-
-
-
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  bool _hidePassword = true;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  void _login() {
-    if (!_formKey.currentState!.validate()) return;
-
-    // DEMO ONLY: This does not authenticate against a server.
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MainNavigation(),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F5FC),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Icon(
-                    Icons.account_balance_wallet,
-                    size: 76,
-                    color: Color(0xFF673AB7),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'SmartPay',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF673AB7),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Sign in to continue',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 36),
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email address',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      final email = value?.trim() ?? '';
-                      if (email.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(
-                        r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                      ).hasMatch(email)) {
-                        return 'Enter a valid email address';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 18),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _hidePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _hidePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _hidePassword = !_hidePassword;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must have at least 6 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF673AB7),
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(fontSize: 17),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Don't have an account? "),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RegistrationPage(),
-                            ),
-                          );
-                        },
-                        child: const Text('Register'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Demo mode: any email and password meeting '
-                    'the validation rules will open the app.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
-
-  @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
-}
-
-class _RegistrationPageState extends State<RegistrationPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-
-  bool _hidePassword = true;
-  bool _hideConfirmPassword = true;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  void _register() {
-    if (!_formKey.currentState!.validate()) return;
-
-    // DEMO ONLY: No account is created or saved.
-    // Real registration requires a backend such as Firebase Auth.
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const LoginPage(),
-      ),
-      (route) => false,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Demo registration complete. Please sign in.',
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F5FC),
-      appBar: AppBar(
-        title: const Text('Create Account'),
-        backgroundColor: const Color(0xFF673AB7),
-        foregroundColor: Colors.white,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  'Join SmartPay',
-                  style: TextStyle(
-                    fontSize: 27,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF673AB7),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text('Create your demo account details.'),
-                const SizedBox(height: 28),
-                TextFormField(
-                  controller: _nameController,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: 'Full name',
-                    prefixIcon: Icon(Icons.person_outline),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 18),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email address',
-                    prefixIcon: Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    final email = value?.trim() ?? '';
-                    if (email.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!RegExp(
-                      r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                    ).hasMatch(email)) {
-                      return 'Enter a valid email address';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 18),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _hidePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _hidePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _hidePassword = !_hidePassword;
-                        });
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    if (value.length < 6) {
-                      return 'Use at least 6 characters';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 18),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: _hideConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm password',
-                    prefixIcon: const Icon(Icons.lock_reset),
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _hideConfirmPassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _hideConfirmPassword =
-                              !_hideConfirmPassword;
-                        });
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 26),
-                SizedBox(
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: _register,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF673AB7),
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text(
-                      'Create Account',
-                      style: TextStyle(fontSize: 17),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Already have an account? Login'),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Demo only: these details are not saved and '
-                  'no real account is created.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.black54,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

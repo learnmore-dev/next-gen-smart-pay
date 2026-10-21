@@ -1023,6 +1023,7 @@ class _FeaturePageState extends State<FeaturePage> {
                     textAlign: TextAlign.center,
                   ),
                 ] else ...[
+                  else ...[]
                   const Text(
                     'This feature is a demo placeholder and is not connected to a live service.',
                     textAlign: TextAlign.center,
@@ -1162,6 +1163,8 @@ class HistoryScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text('Your demo activity will appear here.'),
+                  Text('Your demo activity will appear here.'),
+
                 ],
               ),
             )
@@ -1173,7 +1176,8 @@ class HistoryScreen extends StatelessWidget {
                 ),
                 title: Text(transactions[index]),
                 subtitle: const Text('Demo activity only'),
-              ),
+              ),      
+              
             ),
     );
   }

@@ -1023,7 +1023,7 @@ class _FeaturePageState extends State<FeaturePage> {
                     textAlign: TextAlign.center,
                   ),
                 ] else ...[
-                  else ...[]
+                  
                   const Text(
                     'This feature is a demo placeholder and is not connected to a live service.',
                     textAlign: TextAlign.center,
